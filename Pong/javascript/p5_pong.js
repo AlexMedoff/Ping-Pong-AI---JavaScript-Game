@@ -12,7 +12,7 @@ var keys = [false, false];
 
 function setup() {
 
-	createCanvas(750, 500);		//createCanvas defines width and height for you ;)
+	createCanvas(600, 500);		//createCanvas defines width and height for you ;)
 
 	theBall = new Ball(ballSpeed);
 	theBall.calcVelocity();
@@ -34,6 +34,7 @@ function setup() {
 function draw() {
 
 	background(51);		//Background Color on Grayscale
+	drawNet();
 
 	theBall.move();
 	theBall.checkBoundaries();
@@ -51,10 +52,12 @@ function draw() {
 
 	paddleRight.update()
 	paddleRight.display();
+	paddleRight.displayScore();
 
 	paddleLeft.ai();
 	paddleLeft.update();
 	paddleLeft.display();
+	paddleLeft.displayScore();
 
 }
 
@@ -78,13 +81,19 @@ function keyReleased() {
 
 function checkKeys() {
 	if (keys[0]) {
-		paddleRight.movement = -5;
+		paddleRight.movement = -8;
 	}
 	if (keys[1]){
-		paddleRight.movement = 5;
+		paddleRight.movement = 8;
 	}
 	if (!keys[0] && !keys[1]) {
 		paddleRight.movement = 0;
+	}
+}
+
+function drawNet() {
+	for (i=0; i < 11; i++) {
+		rect(width/2, i*50, 3, 20);
 	}
 }
 
@@ -120,7 +129,24 @@ function Ball(s) {
 		}
 	}
 	this.checkScored = function() {
-		if(((this.x-(this.diameter/2) <= 0)) || (this.x+(this.diameter/2) >= width)) {
+		if ((this.x-(this.diameter/2) <= 0)) {
+			paddleRight.score += 1;
+			this.x = width/2
+			this.y = height/2
+			this.angle = random([Math.floor(random(0, 10)), Math.floor(random(170, 190)), Math.floor(random(350, 360))]);
+			this.calcVelocity();
+
+			clone.cloneOnSide = false;
+			clone.x = this.x;
+			clone.y = this.y;
+
+			if (this.angle > 90 && this.angle < 270) {
+				clone.xspeed = clone.speed*(Math.cos(toRad(theBall.angle)));
+				clone.yspeed = clone.speed*(Math.sin(toRad(theBall.angle)));		
+			}
+		}
+		if ((this.x+(this.diameter/2) >= width)) {
+			paddleLeft.score += 1;
 			this.x = width/2
 			this.y = height/2
 			this.angle = random([Math.floor(random(0, 10)), Math.floor(random(170, 190)), Math.floor(random(350, 360))]);
@@ -202,6 +228,7 @@ function Paddle(side) {
 	this.movement = 0;
 	this.t;
 	this.b;
+	this.score = 0;
 
 	this.chooseSide = function() {
 		if (this.side == "left") {
@@ -216,6 +243,15 @@ function Paddle(side) {
 		fill(255, 255, 255);
 		rectMode(CENTER);
 		rect(this.x, this.y, this. width, this.height);
+	}
+
+	this.displayScore = function() {
+		if (this.side == "left") {
+			text(this.score.toString(), 50, 50, 50, 50);	
+		}
+		else if (this.side == "right") {
+			text(this.score.toString(), width-50, 50, 50, 50);
+		}		
 	}
 
 	this.update = function() {
