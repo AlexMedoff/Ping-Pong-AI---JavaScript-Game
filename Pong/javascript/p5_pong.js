@@ -17,7 +17,7 @@ function setup() {
 	theBall = new Ball(ballSpeed);
 	theBall.calcVelocity();
 
-	clone = new Ball(ballSpeed + 15);
+	clone = new Ball(ballSpeed + 20);
 
 	if (theBall.angle > 90 && theBall.angle < 270) {
 		clone.xspeed = clone.speed*(Math.cos(toRad(theBall.angle)));
@@ -247,9 +247,13 @@ function Paddle(side) {
 
 	this.displayScore = function() {
 		if (this.side == "left") {
+			rectMode(CORNER);
+			textAlign(LEFT);
 			text(this.score.toString(), 50, 50, 50, 50);	
 		}
 		else if (this.side == "right") {
+			rectMode(CORNER);
+			textAlign(LEFT);
 			text(this.score.toString(), width-50, 50, 50, 50);
 		}		
 	}
