@@ -53,11 +53,13 @@ function draw() {
 	paddleRight.update()
 	paddleRight.display();
 	paddleRight.displayScore();
+	paddleRight.isWin();
 
 	paddleLeft.ai();
 	paddleLeft.update();
 	paddleLeft.display();
 	paddleLeft.displayScore();
+	paddleLeft.isWin();
 
 }
 
@@ -67,6 +69,18 @@ function keyPressed() {
 	}
 	if(keyCode == DOWN_ARROW) {
 		keys[1] = true;
+	}
+	if(keyCode == 32) {
+		paddleLeft.y = height/2;
+		paddleRight.y = height/2;
+		theBall.x = width/2;
+		theBall.y = height/2;
+		theBall.yspeed = 0;
+		var oneOr = [theBall.speed, -theBall.speed];
+		theBall.xspeed = random(oneOr);
+		paddleRight.score = 0;
+		paddleLeft.score = 0;
+		loop();
 	}
 }
 
@@ -124,8 +138,11 @@ function Ball(s) {
 	}
 
 	this.checkBoundaries = function() {
-		if(((this.y-(this.diameter/2) <= 0)) || (this.y+(this.diameter/2) >= height)) {
-			this.yspeed = -this.yspeed;
+		if(this.y-(this.diameter/2) <= 0) {
+			this.yspeed = Math.abs(this.yspeed);
+		}
+		else if (this.y+(this.diameter/2) >= height) {
+			this.yspeed = -(Math.abs(this.yspeed));
 		}
 	}
 	this.checkScored = function() {
@@ -247,14 +264,14 @@ function Paddle(side) {
 
 	this.displayScore = function() {
 		if (this.side == "left") {
-			rectMode(CORNER);
+			textSize(15);
 			textAlign(LEFT);
-			text(this.score.toString(), 50, 50, 50, 50);	
+			text(this.score.toString(), 50, 50);	
 		}
 		else if (this.side == "right") {
-			rectMode(CORNER);
-			textAlign(LEFT);
-			text(this.score.toString(), width-50, 50, 50, 50);
+			textSize(15);
+			textAlign(RIGHT);
+			text(this.score.toString(), width-50, 50);
 		}		
 	}
 
@@ -263,6 +280,18 @@ function Paddle(side) {
 		this.b = (this.y + (this.height/2));
 		if ((this.t >= 0) && (this.movement < 0) || (this.b <= height) && (this.movement > 0)) {
 			this.y += this.movement;
+		}
+	}
+
+	//Checks if the score = 10, meaning that side has won!
+	this.isWin = function() {
+		if (this.score == 10) {
+			textAlign(CENTER, BASELINE);
+			textSize(30);
+			textStyle(BOLD);
+			fill('pink');
+			text("Press 'SPACE' to play again!", width/2, height/2);
+			noLoop();
 		}
 	}
 
